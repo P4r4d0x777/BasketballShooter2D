@@ -27,6 +27,9 @@ public class BallSelectScript : MonoBehaviour
     {
         int index = int.Parse(UnityEngine.EventSystems.EventSystem.current.currentSelectedGameObject.name);
 
-        // inform GameManager which index is selected 
+        if (GameManager.instance != null)
+        {
+            GameManager.instance.SetBallIndex(index);
+        }
     }
 }
