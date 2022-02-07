@@ -113,6 +113,7 @@ public class ShootScript : MonoBehaviour
             aiming = false;
             myBody.AddForce(GetForce(Input.mousePosition));
             HidePath();
+            GameManager.instance.DecrementBalls();
         }
     }
 
