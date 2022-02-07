@@ -54,13 +54,18 @@ public class ShootScript : MonoBehaviour
     private void Update()
     {
         Aim();
+
+        if(hitGround)
+        {
+
+        }
     }
     void Aim()
     {
         if (shoot)
             return;
 
-        if(Input.GetAxis("Fire 1") == 1)
+        if(Input.GetAxis("Fire1") == 1)
         {
             if(!aiming)
             {
@@ -69,7 +74,31 @@ public class ShootScript : MonoBehaviour
                 startPosition = Input.mousePosition;
 
                 CalculatePath();
+
+                ShowPath();
             }
+            else
+            {
+                CalculatePath();
+            }
+        }
+        else if(aiming && !shoot)
+        {
+            if(inDeadZone(Input.mousePosition) || inReleaseZone(Input.mousePosition))
+            {
+                aiming = false;
+
+                HidePath();
+
+                return;
+            }
+
+            myBody.isKinematic = false;
+            myCollider.enabled = true;
+            shoot = true;
+            aiming = false;
+            myBody.AddForce(GetForce(Input.mousePosition));
+            HidePath();
         }
     }
 
@@ -80,31 +109,72 @@ public class ShootScript : MonoBehaviour
 
     bool inDeadZone(Vector2 mouse)
     {
-        return false;
+        if (Mathf.Abs(startPosition.x - mouse.x) <= deadSence && Mathf.Abs(startPosition.y - mouse.y) <= deadSence)
+        {
+            return true;
+        }
+        else
+            return false;
     }
 
     bool inReleaseZone(Vector2 mouse)
     {
-        return false;
+        if(mouse.x <= 70 )
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     void CalculatePath()
     {
         Vector2 velocity = GetForce(Input.mousePosition) * Time.fixedDeltaTime / myBody.mass;
+
+        for (int i = 0; i < dotsPath.Count; i++)
+        {
+            dotsPath[i].GetComponent<Renderer>().enabled = true;
+
+            float t = i / 30f;
+
+            Vector3 point = PathPoint(transform.position, velocity, t);
+
+            point.z = 1.0f;
+
+            dotsPath[i].transform.position = point;
+        }
     }
 
     Vector2 PathPoint(Vector2 StartP, Vector2 StartVel, float t)
     {
-        return Vector2.zero;
+
+        //TODO: узнать что это за формула и откуда она
+        return StartP + StartVel * t + 0.5f * Physics2D.gravity * t * t;
     }
 
     void HidePath()
     {
-
+        for (int i = 0; i < dotsPath.Count; i++)
+        {
+            dotsPath[i].GetComponent<Renderer>().enabled = false;
+        }
     }
 
     void ShowPath()
     {
+        for (int i = 0; i < dotsPath.Count; i++)
+        {
+            dotsPath[i].GetComponent<Renderer>().enabled = true;
+        }
+    }
 
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if(collision.tag=="Ground")
+        {
+            hitGround = true;
+        }
     }
 }
