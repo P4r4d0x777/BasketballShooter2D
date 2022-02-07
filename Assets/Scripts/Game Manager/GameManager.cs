@@ -31,7 +31,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void CreateBall(int index)
+    public void CreateBall()
     {
         ballCreator.CreateBall(index);
     }
@@ -41,11 +41,11 @@ public class GameManager : MonoBehaviour
         this.index = index;
     }
 
-    private void OnLevelWasLoaded(int level)
+    private void OnLevelWasLoaded()
     {
         if(SceneManager.GetActiveScene().name == "GamePlay")
         {
-            CreateBall(index);
+            CreateBall();
         }
     }
 }

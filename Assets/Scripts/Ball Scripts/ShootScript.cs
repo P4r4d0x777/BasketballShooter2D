@@ -57,7 +57,21 @@ public class ShootScript : MonoBehaviour
 
         if(hitGround)
         {
+            lifeAlphaChannel -= Time.deltaTime;
 
+            Color c = GetComponent<Renderer>().material.GetColor("_Color");
+
+            GetComponent<Renderer>().material.SetColor("_Color", new Color(c.r, c.g, c.b, lifeAlphaChannel));
+
+            if(lifeAlphaChannel < 0 )
+            {
+                if(GameManager.instance != null)
+                {
+                    GameManager.instance.CreateBall();
+                }
+
+                Destroy(gameObject);
+            }
         }
     }
     void Aim()
@@ -170,9 +184,9 @@ public class ShootScript : MonoBehaviour
         }
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    private void OnCollisionEnter2D(Collision2D collision)
     {
-        if(collision.tag=="Ground")
+        if(collision.gameObject.tag == "Ground")
         {
             hitGround = true;
         }
